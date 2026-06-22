@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yumzee</title>
+  <link rel="icon" type="image/png" href="assets/img/yumzee-favicon.png" />
+  <link rel="apple-touch-icon" href="assets/img/yumzee-favicon.png" />
+  <meta name="description"
+    content="Yumzee — Shikarpur's newest food destination. Pizza, burgers, BBQ grills, wraps, and rooftop dining." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" />
+
+  <!-- Tailwind CDN + inline config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/js/config.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: "#e8001d",
+            "brand-dark": "#8B0010",
+            gold: "#f5c518",
+            surface: "#0a0303",
+            card: "#150708",
+            border: "rgba(255,255,255,0.08)",
+          },
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+            display: ['"Playfair Display"', "serif"],
+            bebas: ['"Bebas Neue"', "sans-serif"],
+          },
+          boxShadow: {
+            brand: "0 15px 40px -10px rgba(232,0,29,0.6)",
+            gold: "0 15px 40px -10px rgba(245,197,24,0.5)",
+          },
+          animation: {
+            "fade-in": "fadeIn .6s ease-out both",
+            "scale-in": "scaleIn .5s ease-out both",
+            marquee: "marquee 30s linear infinite",
+            "spin-slow": "spin 60s linear infinite",
+          },
+          keyframes: {
+            fadeIn: {
+              "0%": { opacity: 0, transform: "translateY(12px)" },
+              "100%": { opacity: 1, transform: "translateY(0)" },
+            },
+            scaleIn: {
+              "0%": { opacity: 0, transform: "scale(.92)" },
+              "100%": { opacity: 1, transform: "scale(1)" },
+            },
+            marquee: {
+              from: { transform: "translateX(0)" },
+              to: { transform: "translateX(-50%)" },
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- AOS -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+
+<body class="bg-surface text-white font-sans antialiased overflow-x-hidden">
+  <!-- Loading screen — shown until page data is ready, then fades out (assets/js/ui.js) -->
+  <div id="yzLoader">
+    <div class="yz-loader-mark">
+      <img src="assets/img/yumzee-logo.png" alt="Yumzee" class="w-full h-full object-contain rounded-xl" />
+    </div>
+    <div class="yz-loader-bar"></div>
+    <div class="yz-loader-text">Loading...</div>
+  </div>
+
+  <!-- News / Announcement bar — admin controlled (Admin Panel → News tab) -->
+  <div id="newsBar" class="yz-news-bar h-9 hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-9 flex items-center gap-3">
+      <span class="yz-news-icon"><i data-lucide="megaphone" class="w-3 h-3"></i></span>
+      <div id="newsTrack" class="yz-news-track flex-1"></div>
+    </div>
+  </div>
+
+  <header class="sticky top-0 z-40 bg-black/80 backdrop-blur border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-3">
+      <a href="index.html" class="flex items-center gap-2">
+        <div
+          class="yz-logo-slot relative grid place-items-center w-10 h-10 rounded-md bg-brand text-white font-black text-lg shadow-brand overflow-hidden shrink-0">
+          <span class="logo-fallback">YZ</span><img src="assets/img/yumzee-logo.png" alt="Yumzee Logo"
+            class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'" />
+        </div>
+        <span class="text-2xl font-black tracking-tight"><span class="text-white">Yum</span><span
+            class="text-brand">zee</span></span>
+      </a>
+      <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold uppercase tracking-wide text-white/70">
+        <a href="index.html" class="hover:text-brand transition-colors">Home</a>
+        <a href="menu.html" class="hover:text-brand transition-colors">Menu</a>
+        <a href="index.html#deals" class="hover:text-brand transition-colors">Deals</a>
+        <a href="index.html#gallery" class="hover:text-brand transition-colors">Gallery</a>
+        <a href="index.html#team" class="hover:text-brand transition-colors">Team</a>
+        <a href="checkout.html" class="hover:text-brand transition-colors">Order</a>
+        <a href="index.html#contact" class="hover:text-brand transition-colors">Contact</a>
+      </nav>
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <button id="cartBtn" aria-label="Cart"
+          class="relative grid place-items-center w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:border-brand hover:text-brand text-white/80 transition">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+          <span id="cartBadge"
+            class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 grid place-items-center text-[10px] font-black rounded-full bg-brand text-white">0</span>
+        </button>
+        <a href="tel:+923300000817"
+          class="shrink-0 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-brand text-white text-xs sm:text-sm font-bold uppercase tracking-wider shadow-brand hover:scale-105 transition flex items-center gap-2">
+          <i data-lucide="phone" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">Order Now</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="home" class="relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-black via-[#1a0606] to-black"></div>
+    <div
+      class="absolute -top-32 -right-32 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] rounded-full bg-brand/30 blur-3xl">
+    </div>
+    <div
+      class="absolute top-20 -left-32 w-[280px] sm:w-[400px] h-[280px] sm:h-[400px] rounded-full bg-gold/10 blur-3xl">
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-10">
+      <div class="text-center max-w-3xl mx-auto" data-aos="fade-up">
+        <span
+          class="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-gold/15 text-gold text-[10px] sm:text-xs font-bold uppercase tracking-widest border border-gold/30">
+          <i data-lucide="flame" class="w-3 h-3"></i> First Time Ever In
+          Shikarpur
+        </span>
+        <h1 class="mt-5 text-4xl sm:text-5xl md:text-7xl font-black uppercase leading-[0.95] tracking-tight">
+          Fuel Your
+          <span class="text-brand drop-shadow-[0_0_30px_rgba(232,0,29,0.5)]">Cravings</span>
+        </h1>
+        <p class="mt-4 text-white/60 text-sm md:text-base">
+          Pick a category — meet the stars of our menu.
+        </p>
+      </div>
+
+      <div id="heroCatNav"
+        class="mt-8 flex flex-nowrap sm:flex-wrap overflow-x-auto sm:overflow-visible justify-start sm:justify-center gap-2 -mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 no-scrollbar">
+      </div>
+
+      <div class="mt-8 sm:mt-10 max-w-5xl mx-auto" data-aos="fade-up">
+        <div
+          class="relative rounded-3xl border border-white/10 bg-gradient-to-br from-[#170505]/80 via-black/60 to-black/80 backdrop-blur-sm p-4 sm:p-6 md:p-8 shadow-[0_30px_80px_-30px_rgba(232,0,29,0.5)]">
+          <div class="grid md:grid-cols-2 items-center gap-5 sm:gap-6 md:gap-8">
+            <div class="relative grid place-items-center mx-auto w-full max-w-[360px] sm:max-w-[420px]">
+              <div
+                class="absolute w-[240px] sm:w-[340px] md:w-[400px] h-[240px] sm:h-[340px] md:h-[400px] rounded-full bg-gradient-to-br from-brand to-brand-dark blur-3xl opacity-40">
+              </div>
+              <div id="heroRing" class="absolute pointer-events-none z-20">
+                <svg viewBox="0 0 200 200"
+                  class="w-[280px] sm:w-[380px] md:w-[460px] h-[280px] sm:h-[380px] md:h-[460px]">
+                  <defs>
+                    <path id="circlePath" d="M 100, 100 m -85, 0 a 85,85 0 1,1 170,0 a 85,85 0 1,1 -170,0" />
+                  </defs>
+                  <text fill="rgba(245,197,24,0.55)" font-size="9" font-weight="700" letter-spacing="4"
+                    style="font-family: 'Bebas Neue', sans-serif">
+                    <textPath href="#circlePath">
+                      ★ FUEL YOUR CRAVINGS ★ YUMZEE! ★ SAY
+                      GOODBYE TO ORDINARY FOOD IN SHIKARPUR
+                    </textPath>
+                  </text>
+                </svg>
+              </div>
+
+              <div
+                class="relative w-[220px] h-[220px] sm:w-[300px] sm:h-[300px] md:w-[380px] md:h-[380px] grid place-items-center">
+                <div
+                  class="absolute inset-0 rounded-[40%_60%_55%_45%/55%_45%_60%_40%] bg-gradient-to-br from-brand/70 via-[#3a0a0a] to-black border border-brand/30 shadow-[0_30px_80px_-20px_rgba(232,0,29,0.5)]">
+                </div>
+                <img id="heroImg" src="assets/img/yumzee-pizza.png" alt=""
+                  class="relative w-[88%] h-[88%] object-contain drop-shadow-[0_30px_60px_rgba(232,0,29,0.45)] animate-scale-in" />
+                <span
+                  class="absolute -top-2 right-2 sm:right-4 bg-gold text-black px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-[10px] font-black uppercase rotate-12 shadow-xl">Yumzest!</span>
+              </div>
+
+              <button id="heroPrev" aria-label="Previous"
+                class="absolute left-0 sm:-left-3 top-1/2 -translate-y-1/2 grid place-items-center w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-black text-white border border-white/10 hover:bg-white hover:text-black hover:border-white transition z-30">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <button id="heroNext" aria-label="Next"
+                class="absolute right-0 sm:-right-3 top-1/2 -translate-y-1/2 grid place-items-center w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-black text-white border border-white/10 hover:bg-white hover:text-black hover:border-white transition z-30">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <div id="heroText" class="animate-fade-in text-center md:text-left"></div>
+          </div>
+          <div id="heroDots" class="mt-6 flex justify-center gap-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="relative border-y border-white/10 bg-brand overflow-hidden">
+      <div
+        class="flex gap-12 py-3 animate-marquee whitespace-nowrap text-white font-black uppercase tracking-widest text-sm w-max">
+        <span class="flex items-center gap-3">Want It. Order It. Enjoy It.
+          <i data-lucide="flame" class="w-3.5 h-3.5"></i> You Crave. We
+          Deliver. <i data-lucide="flame" class="w-3.5 h-3.5"></i> Shikarpur
+          Just Got Tastier <i data-lucide="flame" class="w-3.5 h-3.5"></i></span>
+        <span class="flex items-center gap-3">Want It. Order It. Enjoy It.
+          <i data-lucide="flame" class="w-3.5 h-3.5"></i> You Crave. We
+          Deliver. <i data-lucide="flame" class="w-3.5 h-3.5"></i> Shikarpur
+          Just Got Tastier <i data-lucide="flame" class="w-3.5 h-3.5"></i></span>
+        <span class="flex items-center gap-3">Want It. Order It. Enjoy It.
+          <i data-lucide="flame" class="w-3.5 h-3.5"></i> You Crave. We
+          Deliver. <i data-lucide="flame" class="w-3.5 h-3.5"></i> Shikarpur
+          Just Got Tastier <i data-lucide="flame" class="w-3.5 h-3.5"></i></span>
+        <span class="flex items-center gap-3">Want It. Order It. Enjoy It.
+          <i data-lucide="flame" class="w-3.5 h-3.5"></i> You Crave. We
+          Deliver. <i data-lucide="flame" class="w-3.5 h-3.5"></i> Shikarpur
+          Just Got Tastier <i data-lucide="flame" class="w-3.5 h-3.5"></i></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- HUNGRY CTA -->
+  <section id="hungry-cta" class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <div
+      class="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-black via-brand-dark to-brand p-10 sm:p-14 text-center"
+      data-aos="fade-up">
+      <div class="inline-grid place-items-center w-14 h-14 rounded-full border-2 border-gold text-gold mb-2">
+        <i data-lucide="heart" class="w-6 h-6"></i>
+      </div>
+      <h2 class="mt-2 text-3xl sm:text-4xl md:text-5xl font-black uppercase leading-tight">
+        <span class="text-white">Hungry?</span>
+        <span class="text-gold">Let's Fix That.</span>
+      </h2>
+      <p class="mt-4 text-white/80 text-sm sm:text-base max-w-xl mx-auto">
+        Order now for delivery, or visit our rooftop for an unforgettable
+        family dining experience in Shikarpur.
+      </p>
+      <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
+        <a href="tel:+923300000817"
+          class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gold text-black text-xs sm:text-sm font-black uppercase tracking-widest hover:scale-105 transition"><i
+            data-lucide="phone" class="w-3.5 h-3.5"></i> Call To Order</a>
+        <a href="checkout.html"
+          class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-black text-white text-xs sm:text-sm font-black uppercase tracking-widest border border-white/20 hover:border-white transition">Place
+          Order Online</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about"
+    class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 grid md:grid-cols-2 gap-10 md:gap-12 items-center">
+    <div class="relative" data-aos="fade-right">
+      <div class="absolute -inset-4 bg-gradient-to-br from-brand to-gold rounded-3xl blur-2xl opacity-30"></div>
+      <img src="assets/img/yumzee-pizza.png" alt="Yumzee Pizza"
+        class="relative w-full max-w-md mx-auto drop-shadow-2xl" />
+    </div>
+    <div data-aos="fade-left">
+      <span class="text-gold text-xs font-bold uppercase tracking-widest">About Yumzee</span>
+      <h2 class="mt-3 text-4xl md:text-5xl font-black uppercase leading-tight">
+        Say Goodbye<br />To <span class="text-brand">Ordinary Food</span>
+      </h2>
+      <p class="mt-5 text-white/70">
+        Yumzee is what Shikarpur has been waiting for — a brand new dining
+        experience featuring the
+        <strong class="text-white">Yumzest pizza in town</strong>, sizzling
+        BBQ grills, crispy burgers, loaded wraps, and a rooftop family
+        experience unlike anything else in the city.
+      </p>
+      <p class="mt-3 text-white/70">Come in. Sit down. Fuel your cravings.</p>
+      <div class="mt-8 grid grid-cols-2 gap-4">
+        <div class="bg-card border border-border rounded-xl p-4">
+          <div class="text-3xl font-black text-brand">20+</div>
+          <div class="text-xs uppercase tracking-wider text-white/60 mt-1">
+            Pizza Varieties
+          </div>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-4">
+          <div class="text-3xl font-black text-brand">25+</div>
+          <div class="text-xs uppercase tracking-wider text-white/60 mt-1">
+            BBQ Specialties
+          </div>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-4">
+          <div class="text-3xl font-black text-brand">15</div>
+          <div class="text-xs uppercase tracking-wider text-white/60 mt-1">
+            Value Deals
+          </div>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-4">
+          <div class="text-3xl font-black text-brand">Yes</div>
+          <div class="text-xs uppercase tracking-wider text-white/60 mt-1">
+            Rooftop Seating
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU (dynamic per-category sections) -->
+  <section id="menu" class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+    <div class="text-center mb-10" data-aos="fade-up">
+      <span class="text-gold text-xs font-bold uppercase tracking-widest">The Menu</span>
+      <h2 class="mt-3 text-3xl sm:text-4xl md:text-6xl font-black uppercase">
+        Pick Your <span class="text-brand">Craving</span>
+      </h2>
+    </div>
+    <div id="categorySections" class="space-y-16"></div>
+    <div class="mt-10 text-center">
+      <a href="menu.html"
+        class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-brand text-white text-xs font-black uppercase tracking-widest shadow-brand hover:scale-105 transition">View
+        Full Menu <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></a>
+    </div>
+  </section>
+
+  <!-- FULL MENU DOWNLOAD -->
+  <section id="full-menu" class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <div
+      class="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-[#170505] via-black to-black p-8 sm:p-10 md:p-12"
+      data-aos="fade-up">
+      <div class="grid md:grid-cols-2 gap-8 items-center">
+        <div>
+          <span class="text-gold text-xs font-bold uppercase tracking-widest">Full Menu</span>
+          <h2 class="mt-3 text-3xl sm:text-4xl md:text-5xl font-black uppercase leading-tight">
+            Explore Our <span class="text-brand">Complete Menu</span>
+          </h2>
+          <p class="mt-4 text-white/70 text-sm sm:text-base max-w-md">
+            From sizzling BBQ platters to oven-baked pizzas, loaded fries and
+            refreshing shakes — download the complete Yumzee menu and discover
+            every craving-crusher we serve.
+          </p>
+          <div class="mt-7 flex flex-wrap items-center gap-3">
+            <a href="menu.html"
+              class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-brand text-white text-xs sm:text-sm font-black uppercase tracking-widest shadow-brand hover:scale-105 transition"><i
+                data-lucide="download" class="w-3.5 h-3.5"></i> Download
+              Menu PDF</a>
+            <a href="menu.html"
+              class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-black text-white text-xs sm:text-sm font-black uppercase tracking-widest border border-white/20 hover:border-white transition">Browse
+              Online</a>
+          </div>
+        </div>
+        <div class="relative hidden md:block">
+          <div
+            class="relative w-44 mx-auto aspect-[3/4] rounded-2xl bg-gradient-to-br from-brand to-brand-dark border border-white/10 shadow-[0_30px_80px_-20px_rgba(232,0,29,0.5)] rotate-6 grid place-items-center">
+            <span
+              class="absolute -top-3 -right-3 bg-gold text-black px-3 py-1 rounded-full text-[10px] font-black uppercase">PDF</span>
+            <i data-lucide="file-text" class="w-12 h-12 text-white/80"></i>
+            <span
+              class="absolute bottom-4 left-0 right-0 text-center text-[10px] font-black uppercase tracking-widest text-white">Yumzee
+              Menu</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEALS -->
+  <section id="deals"
+    class="relative py-16 sm:py-20 bg-gradient-to-b from-black via-[#1a0606] to-black border-y border-brand/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="text-center mb-12" data-aos="fade-up">
+        <span class="text-gold text-xs font-bold uppercase tracking-widest">BIGG Deals</span>
+        <h2 class="mt-3 text-4xl md:text-6xl font-black uppercase">
+          Pizza <span class="text-brand">Combos</span>
+        </h2>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5" id="biggDeals"></div>
+
+      <div class="mt-16 text-center" data-aos="fade-up">
+        <span class="text-gold text-xs font-bold uppercase tracking-widest">15 Value Deals</span>
+        <h3 class="mt-3 text-3xl md:text-5xl font-black uppercase">
+          YZ <span class="text-brand">Value Deals</span>
+        </h3>
+        <p class="text-white/60 mt-2 text-sm">Starting from Rs 470</p>
+      </div>
+      <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4" id="valueDeals"></div>
+    </div>
+  </section>
+
+  <!-- BBQ -->
+  <section id="bbq" class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+    <div class="grid md:grid-cols-2 gap-10 md:gap-12 items-center">
+      <div data-aos="fade-right">
+        <span class="text-gold text-xs font-bold uppercase tracking-widest">BBQ Grill</span>
+        <h2 class="mt-3 text-4xl md:text-6xl font-black uppercase leading-tight">
+          Pure Tikka<br /><span class="text-brand">Feast</span>
+        </h2>
+        <p class="mt-5 text-white/70 max-w-md">
+          Grilled &amp; smoky flavours in every bite. Family-size platters for
+          2, 4 and 6 people — feast together at Yumzee.
+        </p>
+        <div class="mt-6 space-y-3">
+          <div class="flex justify-between items-center bg-card border border-border rounded-xl px-5 py-4">
+            <span class="font-bold uppercase tracking-wider text-sm">2 Person Platter</span><span
+              class="text-brand font-black text-lg">Rs 1499</span>
+          </div>
+          <div class="flex justify-between items-center bg-card border border-border rounded-xl px-5 py-4">
+            <span class="font-bold uppercase tracking-wider text-sm">4 Person Platter</span><span
+              class="text-brand font-black text-lg">Rs 2199</span>
+          </div>
+          <div class="flex justify-between items-center bg-card border border-border rounded-xl px-5 py-4">
+            <span class="font-bold uppercase tracking-wider text-sm">6 Person Platter</span><span
+              class="text-brand font-black text-lg">Rs 3999</span>
+          </div>
+        </div>
+      </div>
+      <div class="relative" data-aos="fade-left">
+        <div
+          class="absolute inset-0 bg-gradient-to-br from-brand/40 via-orange-600/20 to-transparent rounded-full blur-3xl">
+        </div>
+        <img src="assets/img/yumzee-bbq.png" alt="BBQ Chicken Skewers"
+          class="relative w-full max-w-md mx-auto drop-shadow-[0_20px_60px_rgba(232,0,29,0.4)]" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ROOFTOP -->
+  <section id="rooftop" class="relative py-16 sm:py-24 overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-black via-[#1a0606] to-black"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-10 md:gap-12 items-center">
+      <div data-aos="fade-right">
+        <span class="text-gold text-xs font-bold uppercase tracking-widest">The Experience</span>
+        <h2 class="mt-3 text-4xl md:text-6xl font-black uppercase leading-tight">
+          Experience Dining<br /><span class="text-brand">Above The City</span>
+        </h2>
+        <p class="mt-6 max-w-lg text-white/80">
+          The Rooftop Family Experience — open skies, glowing string lights,
+          signature flavours and unforgettable moments with your loved ones.
+          Only at Yumzee, Shikarpur.
+        </p>
+        <div class="mt-6 grid grid-cols-3 gap-3 max-w-md" id="rooftopThumbs"></div>
+        <a href="tel:+923300000817"
+          class="mt-8 inline-flex items-center gap-2 px-7 py-4 rounded-full bg-brand text-white text-sm font-black uppercase tracking-widest hover:scale-105 transition"><i
+            data-lucide="phone" class="w-4 h-4"></i> Reserve Your Table</a>
+      </div>
+      <div
+        class="relative aspect-[4/5] rounded-3xl overflow-hidden border border-white/10 shadow-[0_30px_80px_-20px_rgba(232,0,29,0.4)]"
+        data-aos="fade-left">
+        <div id="rooftopStage" class="absolute inset-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none">
+        </div>
+        <div class="absolute bottom-6 left-6 right-6">
+          <span
+            class="inline-block px-3 py-1 rounded-full bg-brand text-white text-[10px] font-black uppercase tracking-widest">Open
+            Air</span>
+          <p class="mt-3 text-white/90 font-bold">
+            "Your table is waiting for memorable moments."
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews" class="relative py-20">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-12" data-aos="fade-up">
+        <span class="text-gold text-xs font-bold uppercase tracking-widest">Loved By Food Lovers</span>
+        <h2 class="mt-3 text-4xl md:text-6xl font-black uppercase">
+          What Our <span class="text-brand">Guests Say</span>
+        </h2>
+      </div>
+      <div class="relative">
+        <div id="reviewsViewport" class="overflow-hidden">
+          <div id="reviewsTrack" class="flex transition-transform duration-500 ease-out gap-6">
+            <article
+              class="group relative bg-card border border-border rounded-2xl p-6 hover:border-brand hover:-translate-y-1 transition shadow-[0_20px_50px_-30px_rgba(232,0,29,0.6)] shrink-0 basis-full md:basis-[calc((100%-3rem)/3)]"
+              data-aos="fade-up">
+              <div class="absolute top-0 left-6 right-6 h-1 bg-gradient-to-r from-transparent via-brand to-transparent">
+              </div>
+              <div class="flex items-center gap-4">
+                <div
+                  class="grid place-items-center w-12 h-12 rounded-full bg-gradient-to-br from-brand to-brand-dark text-white font-black text-lg shadow-brand">
+                  A
+                </div>
+                <div>
+                  <div class="font-black uppercase tracking-wider text-sm">
+                    Ayesha Khan
+                  </div>
+                  <div class="text-xs text-white/50">Family Diner</div>
+                </div>
+              </div>
+              <div class="mt-4 flex gap-0.5 text-gold">
+                <i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i
+                  class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i
+                  class="fa-solid fa-star text-xs"></i>
+              </div>
+              <p class="mt-4 text-sm text-white/75 leading-relaxed">
+                "Finally, Shikarpur has a place worth dressing up for. The
+                rooftop is magical and the pizza is hands-down the best in
+                town."
+              </p>
+            </article>
+            <article
+              class="group relative bg-card border border-border rounded-2xl p-6 hover:border-brand hover:-translate-y-1 transition shadow-[0_20px_50px_-30px_rgba(232,0,29,0.6)] shrink-0 basis-full md:basis-[calc((100%-3rem)/3)]"
+              data-aos="fade-up" data-aos-delay="100">
+              <div class="absolute top-0 left-6 right-6 h-1 bg-gradient-to-r from-transparent via-brand to-transparent">
+              </div>
+              <div class="flex items-center gap-4">
+                <div
+                  class="grid place-items-center w-12 h-12 rounded-full bg-gradient-to-br from-brand to-brand-dark text-white font-black text-lg shadow-brand">
+                  B
+                </div>
+                <div>
+                  <div class="font-black uppercase tracking-wider text-sm">
+                    Bilal Memon
+                  </div>
+                  <div class="text-xs text-white/50">Foodie</div>
+                </div>
+              </div>
+              <div class="mt-4 flex gap-0.5 text-gold">
+                <i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i
+                  class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i
+                  class="fa-solid fa-star text-xs"></i>
+              </div>
+              <p class="mt-4 text-sm text-white/75 leading-relaxed">
+                "Injected Broast is unreal — juicy, crunchy, and packed with
+                flavour. Yumzee easily beats every fast food spot here."
+              </p>
+            </article>
+            <article
+              class="group relative bg-card border border-border rounded-2xl p-6 hover:border-brand hover:-translate-y-1 transition shadow-[0_20px_50px_-30px_rgba(232,0,29,0.6)] shrink-0 basis-full md:basis-[calc((100%-3rem)/3)]"
+              data-aos="fade-up" data-aos-delay="200">
+              <div class="absolute top-0 left-6 right-6 h-1 bg-gradient-to-r from-transparent via-brand to-transparent">
+              </div>
+              <div class="flex items-center gap-4">
+                <div
+                  class="grid place-items-center w-12 h-12 rounded-full bg-gradient-to-br from-brand to-brand-dark text-white font-black text-lg shadow-brand">
+                  Z
+                </div>
+                <div>
+                  <div class="font-black uppercase tracking-wider text-sm">
+                    Zara Sheikh
+                  </div>
+                  <div class="text-xs text-white/50">Regular</div>
+                </div>
+              </div>
+              <div class="mt-4 flex gap-0.5 text-gold">
+                <i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i
+                  class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i
+                  class="fa-regular fa-star text-xs"></i>
+              </div>
+              <p class="mt-4 text-sm text-white/75 leading-relaxed">
+                "Loved the BBQ platter for our family of six. Service was
+                warm, vibes were premium, prices were fair. We'll be back!"
+              </p>
+            </article>
+            <article
+              class="group relative bg-card border border-border rounded-2xl p-6 hover:border-brand hover:-translate-y-1 transition shadow-[0_20px_50px_-30px_rgba(232,0,29,0.6)] shrink-0 basis-full md:basis-[calc((100%-3rem)/3)]"
+              data-aos="fade-up">
+              <div class="absolute top-0 left-6 right-6 h-1 bg-gradient-to-r from-transparent via-brand to-transparent">
+              </div>
+              <div class="flex items-center gap-4">
+                <div
+                  class="grid place-items-center w-12 h-12 rounded-full bg-gradient-to-br from-brand to-brand-dark text-white font-black text-lg shadow-brand">
+                  F
+                </div>
+                <div>
+                  <div class="font-black uppercase tracking-wider text-sm">
+                    Faisal Qureshi
+                  </div>
+                  <div class="text-xs text-white/50">Regular</div>
+                </div>
+              </div>
+              <div class="mt-4 flex gap-0.5 text-gold">
+                <i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i
+                  class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i
+                  class="fa-solid fa-star text-xs"></i>
+              </div>
+              <p class="mt-4 text-sm text-white/75 leading-relaxed">
+                "The Kabab Crust Pizza is something else entirely. Great
+                portions, fast delivery, and the staff is genuinely friendly."
+              </p>
+            </article>
+            <article
+              class="group relative bg-card border border-border rounded-2xl p-6 hover:border-brand hover:-translate-y-1 transition shadow-[0_20px_50px_-30px_rgba(232,0,29,0.6)] shrink-0 basis-full md:basis-[calc((100%-3rem)/3)]"
+              data-aos="fade-up" data-aos-delay="100">
+              <div class="absolute top-0 left-6 right-6 h-1 bg-gradient-to-r from-transparent via-brand to-transparent">
+              </div>
+              <div class="flex items-center gap-4">
+                <div
+                  class="grid place-items-center w-12 h-12 rounded-full bg-gradient-to-br from-brand to-brand-dark text-white font-black text-lg shadow-brand">
+                  S
+                </div>
+                <div>
+                  <div class="font-black uppercase tracking-wider text-sm">
+                    Sana Abbasi
+                  </div>
+                  <div class="text-xs text-white/50">Food Blogger</div>
+                </div>
+              </div>
+              <div class="mt-4 flex gap-0.5 text-gold">
+                <i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i
+                  class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i
+                  class="fa-regular fa-star text-xs"></i>
+              </div>
+              <p class="mt-4 text-sm text-white/75 leading-relaxed">
+                "Yumzee's loaded fries deserve their own fan club. Generous
+                toppings and the grilled chicken twist is a nice touch."
+              </p>
+            </article>
+            <article
+              class="group relative bg-card border border-border rounded-2xl p-6 hover:border-brand hover:-translate-y-1 transition shadow-[0_20px_50px_-30px_rgba(232,0,29,0.6)] shrink-0 basis-full md:basis-[calc((100%-3rem)/3)]"
+              data-aos="fade-up" data-aos-delay="200">
+              <div class="absolute top-0 left-6 right-6 h-1 bg-gradient-to-r from-transparent via-brand to-transparent">
+              </div>
+              <div class="flex items-center gap-4">
+                <div
+                  class="grid place-items-center w-12 h-12 rounded-full bg-gradient-to-br from-brand to-brand-dark text-white font-black text-lg shadow-brand">
+                  H
+                </div>
+                <div>
+                  <div class="font-black uppercase tracking-wider text-sm">
+                    Hamza Soomro
+                  </div>
+                  <div class="text-xs text-white/50">Family Diner</div>
+                </div>
+              </div>
+              <div class="mt-4 flex gap-0.5 text-gold">
+                <i class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i
+                  class="fa-solid fa-star text-xs"></i><i class="fa-solid fa-star text-xs"></i><i
+                  class="fa-solid fa-star text-xs"></i>
+              </div>
+              <p class="mt-4 text-sm text-white/75 leading-relaxed">
+                "Booked the rooftop for a birthday and it exceeded
+                expectations. Great food, great view, will definitely return."
+              </p>
+            </article>
+          </div>
+        </div>
+        <button id="reviewsPrev" aria-label="Previous reviews"
+          class="absolute -left-3 sm:-left-5 top-1/2 -translate-y-1/2 grid place-items-center w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-black text-white border border-white/10 hover:bg-white hover:text-black hover:border-white transition z-10">
+          <i data-lucide="chevron-left" class="w-4 h-4"></i>
+        </button>
+        <button id="reviewsNext" aria-label="Next reviews"
+          class="absolute -right-3 sm:-right-5 top-1/2 -translate-y-1/2 grid place-items-center w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-black text-white border border-white/10 hover:bg-white hover:text-black hover:border-white transition z-10">
+          <i data-lucide="chevron-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery" class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+    <div class="text-center mb-10" data-aos="fade-up">
+      <span class="text-gold text-xs font-bold uppercase tracking-widest">Inside Yumzee</span>
+      <h2 class="mt-3 text-3xl sm:text-4xl md:text-6xl font-black uppercase">
+        Our <span class="text-brand">Gallery</span>
+      </h2>
+      <p class="mt-3 text-white/60 text-sm max-w-xl mx-auto">
+        A glimpse into our kitchen, dining floor and rooftop.
+      </p>
+    </div>
+    <div id="galleryGrid" class="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] sm:auto-rows-[180px] gap-3"></div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="team"
+    class="relative py-16 sm:py-20 bg-gradient-to-b from-black via-[#150505] to-black border-y border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="text-center mb-12" data-aos="fade-up">
+        <span class="text-gold text-xs font-bold uppercase tracking-widest">The People</span>
+        <h2 class="mt-3 text-3xl sm:text-4xl md:text-6xl font-black uppercase">
+          Meet The <span class="text-brand">Team</span>
+        </h2>
+        <p class="mt-3 text-white/60 text-sm max-w-xl mx-auto">
+          The chefs and crew making every plate at Yumzee unforgettable.
+        </p>
+      </div>
+      <div id="teamGrid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"></div>
+    </div>
+  </section>
+
+  <!-- ORDER CTA -->
+  <section id="order"
+    class="relative py-16 sm:py-20 bg-gradient-to-b from-black via-[#1a0606] to-black border-y border-brand/20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center" data-aos="fade-up">
+      <span class="text-gold text-xs font-bold uppercase tracking-widest">Build Your Order</span>
+      <h2 class="mt-3 text-3xl sm:text-4xl md:text-6xl font-black uppercase">
+        Order <span class="text-brand">In Seconds</span>
+      </h2>
+      <p class="mt-4 text-white/65 text-sm max-w-xl mx-auto">
+        Browse the menu, tap
+        <span class="text-white font-bold">Add to Cart</span>, then head to
+        checkout. Cash on Delivery only — we'll call to confirm.
+      </p>
+      <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
+        <a href="menu.html"
+          class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-brand text-white text-xs sm:text-sm font-black uppercase tracking-widest shadow-brand hover:scale-105 transition"><i
+            data-lucide="shopping-bag" class="w-3.5 h-3.5"></i> Start
+          Ordering</a>
+        <a href="checkout.html"
+          class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/5 border border-white/10 text-white text-xs sm:text-sm font-black uppercase tracking-widest hover:border-brand transition">Go
+          To Checkout
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
+    <div class="text-center mb-12" data-aos="fade-up">
+      <span class="text-gold text-xs font-bold uppercase tracking-widest">Find Us</span>
+      <h2 class="mt-3 text-3xl sm:text-4xl md:text-6xl font-black uppercase">
+        Visit <span class="text-brand">Yumzee</span>
+      </h2>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-4 sm:gap-5">
+      <a href="https://www.google.com/maps/search/?api=1&query=New+Fojdari+Road%2C+Shikarpur%2C+Sindh%2C+Pakistan"
+        target="_blank" rel="noopener"
+        class="bg-card border border-border rounded-2xl p-7 hover:border-brand transition text-center block"
+        data-aos="fade-up">
+        <div class="grid place-items-center w-14 h-14 mx-auto rounded-full bg-brand/15 text-brand mb-4">
+          <i data-lucide="map-pin" class="w-5 h-5"></i>
+        </div>
+        <h3 class="font-black uppercase tracking-wider text-sm">Location</h3>
+        <p class="text-white/70 text-sm mt-1">New Fojdari Road</p>
+        <p class="text-white/70 text-sm">Shikarpur, Sindh</p>
+      </a>
+      <div class="bg-card border border-border rounded-2xl p-7 hover:border-brand transition text-center"
+        data-aos="fade-up" data-aos-delay="100">
+        <div class="grid place-items-center w-14 h-14 mx-auto rounded-full bg-brand/15 text-brand mb-4">
+          <i data-lucide="phone" class="w-5 h-5"></i>
+        </div>
+        <h3 class="font-black uppercase tracking-wider text-sm">Order Now</h3>
+        <p class="text-white/70 text-sm mt-1">0330 0000817</p>
+        <p class="text-white/70 text-sm">+92 330 0000817</p>
+      </div>
+      <div class="bg-card border border-border rounded-2xl p-7 hover:border-brand transition text-center"
+        data-aos="fade-up" data-aos-delay="200">
+        <div class="grid place-items-center w-14 h-14 mx-auto rounded-full bg-brand/15 text-brand mb-4">
+          <i data-lucide="clock" class="w-5 h-5"></i>
+        </div>
+        <h3 class="font-black uppercase tracking-wider text-sm">
+          Opening Hours
+        </h3>
+        <p class="text-white/70 text-sm mt-1">Daily • After Maghrib</p>
+        <p class="text-white/70 text-sm">Indoor + Rooftop</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="hidden fixed inset-0 z-[80] bg-black/90 backdrop-blur place-items-center p-4">
+    <button id="lightboxClose"
+      class="absolute top-5 right-5 w-10 h-10 grid place-items-center rounded-full bg-white/10 text-white hover:bg-brand transition">
+      ✕
+    </button>
+    <img id="lightboxImg" class="max-w-full max-h-[85vh] rounded-2xl border border-white/10" />
+  </div>
+
+  <script src="assets/js/home.js"></script>
+
+  <footer class="bg-black border-t border-white/5 mt-10">
+    <div class="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-2">
+        <a href="index.html" class="flex items-center gap-2">
+          <div
+            class="yz-logo-slot relative grid place-items-center w-10 h-10 rounded-md bg-brand text-white font-black text-lg shadow-brand overflow-hidden shrink-0">
+            <span class="logo-fallback">YZ</span><img src="assets/img/yumzee-logo.png" alt="Yumzee Logo"
+              class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'" />
+          </div>
+          <span class="text-2xl font-black tracking-tight"><span class="text-white">Yum</span><span
+              class="text-brand">zee</span></span>
+        </a>
+        <p class="mt-4 text-white/60 text-sm max-w-sm">
+          Fuel Your Cravings — At Yumzee. Shikarpur's newest food destination
+          featuring pizzas, burgers, BBQ grills and a rooftop family
+          experience.
+        </p>
+        <div class="flex gap-3 mt-6">
+          <a id="footerFacebook" href="#" target="_blank" rel="noopener" aria-label="Facebook"
+            class="w-10 h-10 rounded-full bg-white/5 border border-white/10 grid place-items-center text-white/70 hover:bg-brand hover:text-white hover:border-brand transition"><i
+              class="fa-brands fa-facebook-f"></i></a>
+          <a id="footerInstagram" href="#" target="_blank" rel="noopener" aria-label="Instagram"
+            class="w-10 h-10 rounded-full bg-white/5 border border-white/10 grid place-items-center text-white/70 hover:bg-brand hover:text-white hover:border-brand transition"><i
+              class="fa-brands fa-instagram"></i></a>
+          <a id="footerTiktok" href="#" target="_blank" rel="noopener" aria-label="TikTok"
+            class="w-10 h-10 rounded-full bg-white/5 border border-white/10 grid place-items-center text-white/70 hover:bg-brand hover:text-white hover:border-brand transition"><i
+              class="fa-brands fa-tiktok"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-black uppercase tracking-wider text-sm mb-4">Menu</h4>
+        <ul class="space-y-2 text-sm text-white/60">
+          <li><a href="menu.html" class="hover:text-brand">Pizza</a></li>
+          <li><a href="menu.html" class="hover:text-brand">Burgers</a></li>
+          <li><a href="menu.html" class="hover:text-brand">BBQ Grill</a></li>
+          <li>
+            <a href="menu.html" class="hover:text-brand">Wraps &amp; Rolls</a>
+          </li>
+          <li><a href="menu.html" class="hover:text-brand">Drinks</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-black uppercase tracking-wider text-sm mb-4">
+          Contact
+        </h4>
+        <ul class="space-y-2 text-sm text-white/60">
+          <li>New Fojdari Road, Shikarpur</li>
+          <li>
+            <a href="tel:+923300000817" class="hover:text-brand">0330 0000817</a>
+          </li>
+          <li>@Yumzee.Official</li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/5 py-5 text-center text-xs text-white/40">
+      © <span id="yr"></span> Yumzee Shikarpur — Fuel Your Cravings.
+      <a href="login.html" class="hover:text-brand">Admin</a>
+    </div>
+  </footer>
+
+  <!-- Floating call button -->
+  <a href="tel:+923300000817" aria-label="Call Yumzee"
+    class="fixed bottom-6 right-6 z-50 grid place-items-center w-14 h-14 rounded-full bg-brand text-white shadow-brand hover:scale-110 transition group">
+    <span class="absolute inset-0 rounded-full bg-brand animate-ping opacity-40"></span>
+    <i class="fa-solid fa-phone relative text-lg"></i>
+  </a>
+
+  <!-- Cart drawer -->
+  <div id="cartDrawer" class="fixed inset-0 z-[70] hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" data-cart-close></div>
+    <aside class="absolute right-0 top-0 h-full w-full max-w-md bg-card border-l border-border flex flex-col">
+      <div class="flex items-center justify-between p-5 border-b border-border">
+        <h3 class="font-black uppercase tracking-wider">Your Cart</h3>
+        <button data-cart-close
+          class="w-9 h-9 grid place-items-center rounded-full bg-white/5 hover:bg-brand transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div id="cartItems" class="flex-1 overflow-y-auto p-5 space-y-3"></div>
+      <div class="border-t border-border p-5 space-y-3">
+        <div class="flex justify-between text-sm">
+          <span class="text-white/60">Subtotal</span><span id="cartTotal" class="font-black text-gold">Rs 0</span>
+        </div>
+        <a href="checkout.html"
+          class="block text-center px-5 py-3 rounded-full bg-brand text-white font-black uppercase tracking-widest text-xs shadow-brand hover:scale-[1.02] transition">Checkout</a>
+      </div>
+    </aside>
+  </div>
+
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/card.js"></script>
+  <script src="assets/js/ui.js"></script>
+</body>
+
+</html>

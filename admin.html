@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yumzee</title>
+  <link rel="icon" type="image/png" href="assets/img/yumzee-favicon.png" />
+  <link rel="apple-touch-icon" href="assets/img/yumzee-favicon.png" />
+  <meta name="description" content="Yumzee admin panel — manage categories, items and orders." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap">
+
+  <!-- Tailwind CDN + inline config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/js/config.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#e8001d',
+            'brand-dark': '#8B0010',
+            gold: '#f5c518',
+            surface: '#0a0303',
+            card: '#150708',
+            border: 'rgba(255,255,255,0.08)',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['"Playfair Display"', 'serif'],
+            bebas: ['"Bebas Neue"', 'sans-serif'],
+          },
+          boxShadow: {
+            brand: '0 15px 40px -10px rgba(232,0,29,0.6)',
+            gold: '0 15px 40px -10px rgba(245,197,24,0.5)',
+          },
+          animation: {
+            'fade-in': 'fadeIn .6s ease-out both',
+            'scale-in': 'scaleIn .5s ease-out both',
+            marquee: 'marquee 30s linear infinite',
+            'spin-slow': 'spin 60s linear infinite',
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: 0, transform: 'translateY(12px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+            scaleIn: { '0%': { opacity: 0, transform: 'scale(.92)' }, '100%': { opacity: 1, transform: 'scale(1)' } },
+            marquee: { from: { transform: 'translateX(0)' }, to: { transform: 'translateX(-50%)' } },
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- AOS -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+</head>
+
+<body class="bg-surface text-white font-sans antialiased overflow-x-hidden">
+
+  <!-- News / Announcement bar — admin controlled (Admin Panel → News tab) -->
+  <div id="newsBar" class="yz-news-bar h-9 hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-9 flex items-center gap-3">
+      <span class="yz-news-icon"><i data-lucide="megaphone" class="w-3 h-3"></i></span>
+      <div id="newsTrack" class="yz-news-track flex-1"></div>
+    </div>
+  </div>
+
+  <header class="sticky top-0 z-40 bg-black/80 backdrop-blur border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-3">
+      <a href="index.html" class="flex items-center gap-2">
+        <div
+          class="yz-logo-slot relative grid place-items-center w-10 h-10 rounded-md bg-brand text-white font-black text-lg shadow-brand overflow-hidden shrink-0">
+          <span class="logo-fallback">YZ</span><img src="assets/img/yumzee-logo.png" alt="Yumzee Logo"
+            class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">
+        </div>
+        <span class="text-2xl font-black tracking-tight"><span class="text-white">Yum</span><span
+            class="text-brand">zee</span></span>
+      </a>
+      <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold uppercase tracking-wide text-white/70">
+        <a href="index.html" class="hover:text-brand transition-colors">Home</a>
+        <a href="menu.html" class="hover:text-brand transition-colors">Menu</a>
+        <a href="index.html#deals" class="hover:text-brand transition-colors">Deals</a>
+        <a href="index.html#gallery" class="hover:text-brand transition-colors">Gallery</a>
+        <a href="index.html#team" class="hover:text-brand transition-colors">Team</a>
+        <a href="checkout.html" class="hover:text-brand transition-colors">Order</a>
+        <a href="index.html#contact" class="hover:text-brand transition-colors">Contact</a>
+      </nav>
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <button id="cartBtn" aria-label="Cart"
+          class="relative grid place-items-center w-10 h-10 rounded-full bg-white/5 border border-white/10 hover:border-brand hover:text-brand text-white/80 transition">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+          <span id="cartBadge"
+            class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 grid place-items-center text-[10px] font-black rounded-full bg-brand text-white">0</span>
+        </button>
+        <a href="tel:+923300000817"
+          class="shrink-0 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-brand text-white text-xs sm:text-sm font-bold uppercase tracking-wider shadow-brand hover:scale-105 transition flex items-center gap-2">
+          <i data-lucide="phone" class="w-3.5 h-3.5"></i><span class="hidden sm:inline">Order Now</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+      <div><span class="text-gold text-xs font-bold uppercase tracking-widest">Yumzee</span>
+        <h1 class="text-3xl md:text-4xl font-black uppercase mt-1">Admin <span class="text-brand">Panel</span></h1>
+      </div>
+      <button id="logoutBtn"
+        class="px-4 py-2 rounded-full bg-white/5 border border-border hover:border-brand text-xs font-bold uppercase tracking-wider">Lock</button>
+    </div>
+    <div class="flex gap-2 mb-6 border-b border-border overflow-x-auto">
+      <button data-tab="categories"
+        class="admin-tab active shrink-0 px-4 py-2.5 text-xs font-black uppercase tracking-wider">Categories</button>
+      <button data-tab="items" class="admin-tab shrink-0 px-4 py-2.5 text-xs font-black uppercase tracking-wider">Food
+        Items</button>
+      <button data-tab="team"
+        class="admin-tab shrink-0 px-4 py-2.5 text-xs font-black uppercase tracking-wider">Team</button>
+      <button data-tab="news"
+        class="admin-tab shrink-0 px-4 py-2.5 text-xs font-black uppercase tracking-wider">News</button>
+      <button data-tab="gallery"
+        class="admin-tab shrink-0 px-4 py-2.5 text-xs font-black uppercase tracking-wider">Gallery</button>
+      <button data-tab="deals"
+        class="admin-tab shrink-0 px-4 py-2.5 text-xs font-black uppercase tracking-wider">Deals</button>
+    </div>
+
+    <div data-panel="categories" class="admin-panel">
+      <form id="catForm" class="bg-card border border-border rounded-2xl p-5 flex gap-3 mb-5">
+        <input required name="name" placeholder="New category name"
+          class="flex-1 px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm" />
+        <button
+          class="px-5 py-3 rounded-lg bg-brand text-white text-xs font-black uppercase tracking-widest shadow-brand hover:scale-105 transition">Add</button>
+      </form>
+      <div id="catList" class="grid sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
+    </div>
+
+    <div data-panel="items" class="admin-panel hidden">
+      <form id="itemForm" class="bg-card border border-border rounded-2xl p-5 grid sm:grid-cols-2 gap-3 mb-5">
+        <input required name="name" placeholder="Item name"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm" />
+        <input required name="price" placeholder="Price (e.g. Rs 500) — used if no sizes added below"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm" />
+        <select required name="category" id="itemCat"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm sm:col-span-2"></select>
+        <input name="slogan" placeholder="Slogan / tagline"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm sm:col-span-2" />
+        <textarea name="description" rows="2" placeholder="Description"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm sm:col-span-2"></textarea>
+        <input name="imgUrl" placeholder="Image URL (or use file below)"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm" />
+        <input name="imgFile" type="file" accept="image/*"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border text-sm" />
+        <div class="sm:col-span-2">
+          <p class="text-white/50 text-xs mb-2">Optional — if this item comes in multiple sizes (e.g.
+            Small/Medium/Large, Regular/Pet-Can), add each one below. Leave empty for a single-price item.</p>
+          <div id="variantRows" class="space-y-2"></div>
+          <button type="button" id="addVariantRow"
+            class="mt-2 px-4 py-2 rounded-lg bg-white/5 border border-border text-xs font-bold uppercase tracking-wider text-white/70 hover:border-brand hover:text-white transition">+
+            Add Another Size</button>
+        </div>
+        <button
+          class="sm:col-span-2 px-5 py-3 rounded-lg bg-brand text-white text-xs font-black uppercase tracking-widest shadow-brand hover:scale-[1.01] transition">Add
+          Item</button>
+      </form>
+      <div id="itemList" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5"></div>
+    </div>
+
+    <div data-panel="team" class="admin-panel hidden">
+      <form id="teamForm" class="bg-card border border-border rounded-2xl p-5 grid sm:grid-cols-2 gap-3 mb-5">
+        <input required name="name" placeholder="Chef / staff name"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm" />
+        <input required name="role" placeholder="Role (e.g. Head Chef)"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm" />
+        <textarea name="bio" rows="2" placeholder="Short bio"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm sm:col-span-2"></textarea>
+        <input name="imgUrl" placeholder="Image URL (or use file below)"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm" />
+        <input name="imgFile" type="file" accept="image/*"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border text-sm" />
+        <button
+          class="sm:col-span-2 px-5 py-3 rounded-lg bg-brand text-white text-xs font-black uppercase tracking-widest shadow-brand hover:scale-[1.01] transition">Add
+          Team Member</button>
+      </form>
+      <div id="teamList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5"></div>
+    </div>
+
+    <div data-panel="news" class="admin-panel hidden">
+      <p class="text-white/50 text-xs mb-4">This appears as a scrolling announcement bar at the top of every page. Add
+        one or more announcements below — with two or more, they scroll automatically.</p>
+      <form id="newsForm" class="bg-card border border-border rounded-2xl p-5 flex flex-col sm:flex-row gap-3 mb-5">
+        <input required name="text" placeholder="e.g. Open Daily • After Maghrib — Indoor + Rooftop Family Dining"
+          class="flex-1 px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm" />
+        <button
+          class="px-5 py-3 rounded-lg bg-brand text-white text-xs font-black uppercase tracking-widest shadow-brand hover:scale-105 transition shrink-0">Add
+          Announcement</button>
+      </form>
+      <div id="newsList" class="space-y-3"></div>
+    </div>
+
+    <div data-panel="gallery" class="admin-panel hidden">
+      <form id="galleryForm" class="bg-card border border-border rounded-2xl p-5 grid sm:grid-cols-2 gap-3 mb-5">
+        <input name="caption" placeholder="Caption (e.g. Rooftop)"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm" />
+        <input name="imgUrl" placeholder="Image URL (or use file below)"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm" />
+        <input name="imgFile" type="file" accept="image/*"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border text-sm sm:col-span-2" />
+        <button
+          class="sm:col-span-2 px-5 py-3 rounded-lg bg-brand text-white text-xs font-black uppercase tracking-widest shadow-brand hover:scale-[1.01] transition">Add
+          Photo</button>
+      </form>
+      <div id="galleryAdminList" class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5"></div>
+    </div>
+
+    <div data-panel="deals" class="admin-panel hidden">
+      <p class="text-white/50 text-xs mb-4">"Combo" deals show as the 4 big cards at the top of the Deals section on the
+        home page (mark one as Birthday/featured to make it golden). "Value" deals show as the compact list below them —
+        used for single/simple offers.</p>
+      <form id="dealForm" class="bg-card border border-border rounded-2xl p-5 grid sm:grid-cols-2 gap-3 mb-5">
+        <select required name="type"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm">
+          <option value="bigg">Combo deal (big card)</option>
+          <option value="value">Value deal (list item)</option>
+        </select>
+        <input required name="label" placeholder="Label (e.g. BIRTHDAY DEAL, or 01 for value deals)"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm" />
+        <input required name="price" placeholder="Price (numbers only, e.g. 2900)"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm" />
+        <label
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border text-sm flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" name="highlight" class="accent-gold" /> Featured / golden card
+        </label>
+        <textarea required name="desc" rows="2" placeholder="What's included"
+          class="px-4 py-3 rounded-lg bg-black/40 border border-border focus:border-brand outline-none text-sm sm:col-span-2"></textarea>
+        <button
+          class="sm:col-span-2 px-5 py-3 rounded-lg bg-brand text-white text-xs font-black uppercase tracking-widest shadow-brand hover:scale-[1.01] transition">Add
+          Deal</button>
+      </form>
+      <div id="dealList" class="space-y-3"></div>
+    </div>
+  </section>
+  <script src="assets/js/admin.js"></script>
+
+
+  <footer class="bg-black border-t border-white/5 mt-10">
+    <div class="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-2">
+        <a href="index.html" class="flex items-center gap-2">
+          <div
+            class="yz-logo-slot relative grid place-items-center w-10 h-10 rounded-md bg-brand text-white font-black text-lg shadow-brand overflow-hidden shrink-0">
+            <span class="logo-fallback">YZ</span><img src="assets/img/yumzee-logo.png" alt="Yumzee Logo"
+              class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">
+          </div>
+          <span class="text-2xl font-black tracking-tight"><span class="text-white">Yum</span><span
+              class="text-brand">zee</span></span>
+        </a>
+        <p class="mt-4 text-white/60 text-sm max-w-sm">Fuel Your Cravings — At Yumzee. Shikarpur's newest food
+          destination featuring pizzas, burgers, BBQ grills and a rooftop family experience.</p>
+        <div class="flex gap-3 mt-6">
+          <a id="footerFacebook" href="#" target="_blank" rel="noopener" aria-label="Facebook"
+            class="w-10 h-10 rounded-full bg-white/5 border border-white/10 grid place-items-center text-white/70 hover:bg-brand hover:text-white hover:border-brand transition"><i
+              class="fa-brands fa-facebook-f"></i></a>
+          <a id="footerInstagram" href="#" target="_blank" rel="noopener" aria-label="Instagram"
+            class="w-10 h-10 rounded-full bg-white/5 border border-white/10 grid place-items-center text-white/70 hover:bg-brand hover:text-white hover:border-brand transition"><i
+              class="fa-brands fa-instagram"></i></a>
+          <a id="footerTiktok" href="#" target="_blank" rel="noopener" aria-label="TikTok"
+            class="w-10 h-10 rounded-full bg-white/5 border border-white/10 grid place-items-center text-white/70 hover:bg-brand hover:text-white hover:border-brand transition"><i
+              class="fa-brands fa-tiktok"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-black uppercase tracking-wider text-sm mb-4">Menu</h4>
+        <ul class="space-y-2 text-sm text-white/60">
+          <li><a href="menu.html" class="hover:text-brand">Pizza</a></li>
+          <li><a href="menu.html" class="hover:text-brand">Burgers</a></li>
+          <li><a href="menu.html" class="hover:text-brand">BBQ Grill</a></li>
+          <li><a href="menu.html" class="hover:text-brand">Wraps &amp; Rolls</a></li>
+          <li><a href="menu.html" class="hover:text-brand">Drinks</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-black uppercase tracking-wider text-sm mb-4">Contact</h4>
+        <ul class="space-y-2 text-sm text-white/60">
+          <li>New Fojdari Road, Shikarpur</li>
+          <li><a href="tel:+923300000817" class="hover:text-brand">0330 0000817</a></li>
+          <li>@Yumzee.Official</li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/5 py-5 text-center text-xs text-white/40">© <span id="yr"></span> Yumzee Shikarpur
+      — Fuel Your Cravings.</div>
+  </footer>
+
+  <!-- Floating call button -->
+  <a href="tel:+923300000817" aria-label="Call Yumzee"
+    class="fixed bottom-6 right-6 z-50 grid place-items-center w-14 h-14 rounded-full bg-brand text-white shadow-brand hover:scale-110 transition group">
+    <span class="absolute inset-0 rounded-full bg-brand animate-ping opacity-40"></span>
+    <i class="fa-solid fa-phone relative text-lg"></i>
+  </a>
+
+  <!-- Cart drawer -->
+  <div id="cartDrawer" class="fixed inset-0 z-[70] hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" data-cart-close></div>
+    <aside class="absolute right-0 top-0 h-full w-full max-w-md bg-card border-l border-border flex flex-col">
+      <div class="flex items-center justify-between p-5 border-b border-border">
+        <h3 class="font-black uppercase tracking-wider">Your Cart</h3>
+        <button data-cart-close
+          class="w-9 h-9 grid place-items-center rounded-full bg-white/5 hover:bg-brand transition"><i data-lucide="x"
+            class="w-4 h-4"></i></button>
+      </div>
+      <div id="cartItems" class="flex-1 overflow-y-auto p-5 space-y-3"></div>
+      <div class="border-t border-border p-5 space-y-3">
+        <div class="flex justify-between text-sm"><span class="text-white/60">Subtotal</span><span id="cartTotal"
+            class="font-black text-gold">Rs 0</span></div>
+        <a href="checkout.html"
+          class="block text-center px-5 py-3 rounded-full bg-brand text-white font-black uppercase tracking-widest text-xs shadow-brand hover:scale-[1.02] transition">Checkout</a>
+      </div>
+    </aside>
+  </div>
+
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/card.js"></script>
+  <script src="assets/js/ui.js"></script>
+
+
+</body>
+
+</html>
